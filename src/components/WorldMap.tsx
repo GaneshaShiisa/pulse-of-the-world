@@ -78,15 +78,19 @@ const WorldMap: React.FC = () => {
     d3.json("countries.geojson").then((data: any) => setGeoData(data));
   }, []);
 
-  // アニメーションループ：実時間で更新
+  // アニメーションループ：実時間で更新（パフォーマンス最適化）
   useEffect(() => {
     let requestRef: number;
+    let lastUpdate = 0;
 
-    const animate = () => {
-      const nextDate = new Date(); // 現在の時刻
-
-      setSimDate(nextDate);
-      setRotation(getSolarRotation(nextDate));
+    const animate = (timestamp: number) => {
+      // 1分に1回だけ更新（60000ms）
+      if (timestamp - lastUpdate >= 60000) {
+        const nextDate = new Date();
+        setSimDate(nextDate);
+        setRotation(getSolarRotation(nextDate));
+        lastUpdate = timestamp;
+      }
 
       requestRef = requestAnimationFrame(animate);
     };
@@ -137,16 +141,13 @@ const WorldMap: React.FC = () => {
         <path d={pathGenerator({ type: "Sphere" }) || ""} fill="#000015" />
         <g className="countries">
           {geoData.features.map((feature, i) => {
-            const delay = (i % 10) * 0.4;
             const dummyTemp = ((i * 7) % 50) - 10;
             const countryColor = colorScale(dummyTemp);
             return (
               <path
                 key={i}
                 d={pathGenerator(feature) || ""}
-                className="country-path"
                 style={{
-                  animationDelay: `${delay}s`,
                   fill: countryColor,
                   fillOpacity: 0.8,
                 }}
@@ -199,6 +200,9 @@ const WorldMap: React.FC = () => {
                     stroke={activeColor}
                     strokeWidth="1"
                     className="echo-ring"
+                    style={{
+                      animationDelay: `${i * 0.4}s`,
+                    }}
                   />
 
                   <rect
