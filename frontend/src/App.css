@@ -251,6 +251,23 @@
   }
 }
 
+/* Pulse active effect */
+.pulse-active {
+  animation: pulse-flash 0.5s ease-in-out;
+}
+
+@keyframes pulse-flash {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
 /* 波紋（エコー）が広がるようなエフェクト */
 .echo-ring {
   animation: echo-expand 2s infinite ease-out;
