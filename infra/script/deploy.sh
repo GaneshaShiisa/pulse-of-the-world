@@ -1,10 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# dist の場所（必要に応じて変更）
-DIST_DIR="./dist"
+# プロジェクトのルートディレクトリ
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+
+# dist の場所（frontend のビルド出力）
+DIST_DIR="$PROJECT_ROOT/frontend/dist"
 
 # nginx の公開ディレクトリ
 NGINX_DIR="/data/data/com.termux/files/usr/share/nginx/html"
+
+echo "=== Building frontend ==="
+
+# frontend ディレクトリに移動してビルド
+cd "$PROJECT_ROOT/frontend"
+if ! npm run build; then
+  echo "Error: Frontend build failed"
+  exit 1
+fi
 
 echo "=== Deploying dist → nginx html ==="
 

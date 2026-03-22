@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import WorldMap from "./components/WorldMap";
 import "./App.css";
 
@@ -10,7 +10,12 @@ function App() {
   } | null>(null);
 
   useEffect(() => {
-    const socket = io("http://127.0.0.1:8000");
+    const isDev = process.env.NODE_ENV === "development";
+
+    const socket = io(isDev ? "http://127.0.0.1:8000" : "/", {
+      path: "/socket.io/",
+      transports: ["websocket"],
+    });
 
     socket.on("triad_pulse", (data) => {
       console.log("Pulse received:", data);
